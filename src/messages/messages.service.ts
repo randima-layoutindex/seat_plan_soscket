@@ -6,7 +6,7 @@ import { Message } from './entities/message.entity';
 @Injectable()
 export class MessagesService {
 
-  message:Message[] = [{seat:1,onHold:true,booked:true}]
+  message:Message[] = [{seat:1,onHold:true,booked:true},{seat:2,onHold:true,booked:true},{seat:3,onHold:true,booked:true},{seat:4,onHold:true,booked:true},]
   channelsList = {}
 
   identify(channelName:string){
@@ -18,7 +18,7 @@ export class MessagesService {
   }
 
   findAll() {
-    return `This action returns all messages`;
+    return this.message;
   }
 
   findOne(id: number) {

@@ -20,22 +20,27 @@ export class MessagesGateway implements OnModuleInit {
   onModuleInit() {
     this.server.on("connection", (socket) => {
       this.socketNew = socket
+      console.log(`client connected :${socket.id}`)
     })
   }
 
   @SubscribeMessage("join")
   onJoinRequest(@MessageBody() body: any, @ConnectedSocket() client: Socket) {
-    // client.join(body.room)
-    let {accessCode,showTimeId} = body;
-    client.join(`seatPlan_${accessCode}_${showTimeId}`)  
+    client.join(body)
+    let { accessCode, showTimeId } = body;
+    console.log(`seatPlan_${accessCode}_${showTimeId}`, "joining")
+    client.join(`seatPlan_${accessCode}_${showTimeId}`)
   }
 
   @SubscribeMessage("newMessage")
   onNewMessage(@MessageBody() body: any) {
-    let {accessCode,showTimeId} = body;
+    let { accessCode, showTimeId } = body;
+    console.log(`seatPlan_${accessCode}_${showTimeId}`, "sending message")
+    console.log(body)
+    // client.broadcast.emit("allMessages",body)
 
     this.server.to(`seatPlan_${accessCode}_${showTimeId}`).emit("onMessage", {
-      msg: "new update",
+      msg: "this message is from on message...",
       content: body.payload
     })
   }
