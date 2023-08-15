@@ -34,6 +34,7 @@ export class OrganizationsService {
     let data = {name:"Rio Cinema",
   accessCode:accessCode,
 showTime:showTimeId}
+console.log(data,"This is the correct access code")
 
 
 // return await this.organizationModel.find()

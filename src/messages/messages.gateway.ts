@@ -5,6 +5,7 @@ import { UpdateMessageDto } from './dto/update-message.dto';
 import { Server, Socket } from 'socket.io';
 import { OnModuleInit } from '@nestjs/common';
 import { ClientRequest } from 'http';
+import { TempService } from 'src/messages/temp.service';
 
 @WebSocketGateway({
   cors: {
@@ -15,7 +16,10 @@ export class MessagesGateway implements OnModuleInit {
   @WebSocketServer()
   server: Server
   socketNew: Socket
-  constructor(private readonly messagesService: MessagesService) { }
+  constructor(private readonly messagesService: MessagesService
+    ,
+    private readonly tempService:TempService
+    ) { }
 
   onModuleInit() {
     this.server.on("connection", (socket) => {
@@ -25,23 +29,36 @@ export class MessagesGateway implements OnModuleInit {
   }
 
   @SubscribeMessage("join")
-  onJoinRequest(@MessageBody() body: any, @ConnectedSocket() client: Socket) {
+  async onJoinRequest(@MessageBody() body: any, @ConnectedSocket() client: Socket) {
     client.join(body)
     let { accessCode, showTimeId } = body;
     console.log(`seatPlan_${accessCode}_${showTimeId}`, "joining")
     client.join(`seatPlan_${accessCode}_${showTimeId}`)
+    let data = {channelName:`seatPlan_${accessCode}_${showTimeId}`}
+    const resCreated = await this.tempService.create(data)
+    const res = await this.tempService.finAllByChannel(`seatPlan_${accessCode}_${showTimeId}`)
+    this.server.to(`seatPlan_${accessCode}_${showTimeId}`).emit("onMessage", {
+      msg: "this message is from on message...",
+      content: res
+      // content: body.payload
+    })
+    // console.log(res,"channel schema created....")
   }
 
   @SubscribeMessage("newMessage")
-  onNewMessage(@MessageBody() body: any) {
+  async onNewMessage(@MessageBody() body: any) {
     let { accessCode, showTimeId } = body;
-    console.log(`seatPlan_${accessCode}_${showTimeId}`, "sending message")
-    console.log(body)
+    console.log(`seatPlan_${accessCode}_${showTimeId}`, "sending message this is the code from sending message")
+    // console.log(body)
     // client.broadcast.emit("allMessages",body)
 
+    const res  = await this.tempService.updateOne(`seatPlan_${accessCode}_${showTimeId}`,body.payload)
+
+    // console.log(res,"this is the response...")
     this.server.to(`seatPlan_${accessCode}_${showTimeId}`).emit("onMessage", {
       msg: "this message is from on message...",
-      content: body.payload
+      content: res
+      // content: body.payload
     })
   }
 
