@@ -40,10 +40,17 @@ return res
 
   async updateOne(channelName:string,updateBody:any):Promise<Temp>{
     console.log("THIS IS THE UPDATE BODY",updateBody)
-    const res = await this.tempModel.findOneAndUpdate({channelName:channelName},updateBody,{
+    let res = await this.tempModel.findOneAndUpdate({channelName:channelName,seatId:updateBody.seatId},updateBody,{
         new:true,
         runValidators:true
     })
+
+    if(!res){
+      let data = {channelName:channelName,...updateBody}
+        res = await this.tempModel.create(data)
+    }
+
+    
 
     console.log(res,"This is from the update one method id tepService")
     return res

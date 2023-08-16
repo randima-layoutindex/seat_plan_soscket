@@ -37,29 +37,33 @@ export class MessagesGateway implements OnModuleInit {
     let data = {channelName:`seatPlan_${accessCode}_${showTimeId}`}
     const resCreated = await this.tempService.create(data)
     const res = await this.tempService.finAllByChannel(`seatPlan_${accessCode}_${showTimeId}`)
-    this.server.to(`seatPlan_${accessCode}_${showTimeId}`).emit("onMessage", {
-      msg: "this message is from on message...",
-      content: res
-      // content: body.payload
-    })
+    console.log("SENDING CURRENT DATA ON HOLD",res)
+    console.log(res,"This is the first payload that is being sent to the frontend")
+    this.server.to(`seatPlan_${accessCode}_${showTimeId}`).emit("onJoin", res)
+    // this.server.to(`seatPlan_${accessCode}_${showTimeId}`).emit("onMessage", {
+    //   msg: "this message is from on message...",
+    //   content: res
+    //   // content: body.payload
+    // })
     // console.log(res,"channel schema created....")
   }
 
   @SubscribeMessage("newMessage")
   async onNewMessage(@MessageBody() body: any) {
     let { accessCode, showTimeId } = body;
-    console.log(`seatPlan_${accessCode}_${showTimeId}`, "sending message this is the code from sending message")
-    // console.log(body)
+    // console.log(`seatPlan_${accessCode}_${showTimeId}`, "sending message this is the code from sending message")
+    // console.log(body,"+++++++++++++++++++++")
     // client.broadcast.emit("allMessages",body)
 
     const res  = await this.tempService.updateOne(`seatPlan_${accessCode}_${showTimeId}`,body.payload)
 
-    // console.log(res,"this is the response...")
-    this.server.to(`seatPlan_${accessCode}_${showTimeId}`).emit("onMessage", {
-      msg: "this message is from on message...",
-      content: res
-      // content: body.payload
-    })
+    console.log(res,"AFTER UPDATE")
+    this.server.to(`seatPlan_${accessCode}_${showTimeId}`).emit("onMessage", res)
+    // this.server.to(`seatPlan_${accessCode}_${showTimeId}`).emit("onMessage", {
+    //   msg: "this message is from on message...",
+    //   content: res
+    //   // content: body.payload
+    // })
   }
 
 
