@@ -3,9 +3,34 @@ import { MessagesService } from './messages.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { Server, Socket } from 'socket.io';
-import { OnModuleInit } from '@nestjs/common';
+import { OnModuleInit,Controller,Get, Body,Patch } from '@nestjs/common';
 import { ClientRequest } from 'http';
 import { TempService } from 'src/messages/temp.service';
+import { Temp } from './schema/temp.schema';
+
+
+@Controller("tempseatplan")
+export class TempseatController{
+    constructor(private tempService:TempService){}
+
+    @Get("testing")
+    testing(){
+      console.log("working...")
+    }
+
+    @Patch("sessionCancelled")
+    async sessionUpdate(@Body()updateBody:any):Promise<Temp>{
+      console.log("session cancel route working.....")
+      const res =  await this.tempService.sessionCancelled(updateBody)
+
+      
+
+      return res
+    }
+
+  }
+
+
 
 @WebSocketGateway({
   cors: {
@@ -32,38 +57,22 @@ export class MessagesGateway implements OnModuleInit {
   async onJoinRequest(@MessageBody() body: any, @ConnectedSocket() client: Socket) {
     client.join(body)
     let { accessCode, showTimeId } = body;
-    console.log(`seatPlan_${accessCode}_${showTimeId}`, "joining")
+    // console.log(`seatPlan_${accessCode}_${showTimeId}`, "joining")
     client.join(`seatPlan_${accessCode}_${showTimeId}`)
     let data = {channelName:`seatPlan_${accessCode}_${showTimeId}`}
-    const resCreated = await this.tempService.create(data)
+    // const resCreated = await this.tempService.create(data)
     const res = await this.tempService.finAllByChannel(`seatPlan_${accessCode}_${showTimeId}`)
-    console.log("SENDING CURRENT DATA ON HOLD",res)
-    console.log(res,"This is the first payload that is being sent to the frontend")
     this.server.to(`seatPlan_${accessCode}_${showTimeId}`).emit("onJoin", res)
-    // this.server.to(`seatPlan_${accessCode}_${showTimeId}`).emit("onMessage", {
-    //   msg: "this message is from on message...",
-    //   content: res
-    //   // content: body.payload
-    // })
-    // console.log(res,"channel schema created....")
+
   }
 
   @SubscribeMessage("newMessage")
   async onNewMessage(@MessageBody() body: any) {
     let { accessCode, showTimeId } = body;
-    // console.log(`seatPlan_${accessCode}_${showTimeId}`, "sending message this is the code from sending message")
-    // console.log(body,"+++++++++++++++++++++")
-    // client.broadcast.emit("allMessages",body)
 
     const res  = await this.tempService.updateOne(`seatPlan_${accessCode}_${showTimeId}`,body.payload)
 
-    console.log(res,"AFTER UPDATE")
     this.server.to(`seatPlan_${accessCode}_${showTimeId}`).emit("onMessage", res)
-    // this.server.to(`seatPlan_${accessCode}_${showTimeId}`).emit("onMessage", {
-    //   msg: "this message is from on message...",
-    //   content: res
-    //   // content: body.payload
-    // })
   }
 
 
@@ -103,4 +112,8 @@ export class MessagesGateway implements OnModuleInit {
   remove(@MessageBody() id: number) {
     return this.messagesService.remove(id);
   }
+
+  
 }
+
+

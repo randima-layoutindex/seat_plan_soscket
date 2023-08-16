@@ -1,7 +1,9 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 // import { SeatSchema,Seat } from "./seat.schema";
 
-@Schema()
+@Schema({
+    timestamps:true
+})
 export class Temp{
     @Prop()
     channelName:string;

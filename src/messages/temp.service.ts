@@ -28,7 +28,6 @@ return res
 
   async finAllByChannel(channelName:string):Promise<Temp[]>{
     const res = await this.tempModel.find({channelName})
-    console.log(res,"ALL THE SEAT DETIALS>...")
     return res
   }
 
@@ -39,7 +38,6 @@ return res
   }
 
   async updateOne(channelName:string,updateBody:any):Promise<Temp>{
-    console.log("THIS IS THE UPDATE BODY",updateBody)
     let res = await this.tempModel.findOneAndUpdate({channelName:channelName,seatId:updateBody.seatId},updateBody,{
         new:true,
         runValidators:true
@@ -50,13 +48,21 @@ return res
         res = await this.tempModel.create(data)
     }
 
-    
 
-    console.log(res,"This is from the update one method id tepService")
+
     return res
   }
   async deleteOne(channelName:string):Promise<Temp>{
     const res = await this.tempModel.findOneAndDelete({channelName})
+    return res
+  }
+
+  async sessionCancelled(updateBody:any):Promise<Temp>{
+    console.log(updateBody.channelName,updateBody.seatId,"ThiS IS FROM SESSION CANCELLED")
+    const res = await this.tempModel.findOneAndUpdate({channelName:updateBody.channelName,seatId:updateBody.seatId},updateBody,{
+      new:true
+    })
+console.log(res)
     return res
   }
 
