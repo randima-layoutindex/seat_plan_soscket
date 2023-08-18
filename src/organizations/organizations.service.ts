@@ -29,15 +29,13 @@ export class OrganizationsService {
     return await this.organizationModel.find()
   }
 
-  async findOneByParams(accessCode:string | number, showTimeId :string | number):Promise<Organization[]>{
+  async findOneByParams(accessCode:string | number, showTimeId :string | number,name:string):Promise<Organization[]>{
     console.log(accessCode,showTimeId)
-    let data = {name:"Rio Cinema",
+    let data = {name:name ||"Rio Cinema",
   accessCode:accessCode,
 showTime:showTimeId}
-console.log(data,"This is the correct access code")
 
 
-// return await this.organizationModel.find()
 return await this.organizationModel.find({...data})
   }
 }

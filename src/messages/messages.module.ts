@@ -8,7 +8,6 @@ import { TempSchema } from './schema/temp.schema';
 @Module({
   imports: [
     MongooseModule.forFeature([
-      // { name: 'Organization', schema: OrganizationSchema },
       {name:"Temp",schema:TempSchema}
     ]),
   ],
