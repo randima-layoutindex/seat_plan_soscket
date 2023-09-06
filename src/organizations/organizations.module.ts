@@ -11,7 +11,6 @@ import { TempSchema } from '../messages/schema/temp.schema';
   imports: [
     MongooseModule.forFeature([
       { name: 'Organization', schema: OrganizationSchema },
-      // {name:"Temp",schema:TempSchema}
     ]),
   ],
   controllers:[OrganizationController],

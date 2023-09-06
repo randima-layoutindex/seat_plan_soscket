@@ -1,12 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
-@Schema({
-    timestamps:true
-})
-export class Temp{
-    @Prop()
-    channelName:string;
-
+@Schema()
+export class Seat{
     @Prop()
     seatId: string;
 
@@ -20,4 +15,4 @@ export class Temp{
     tempId: string;
 }
 
-export const TempSchema = SchemaFactory.createForClass(Temp);
+export const SeatSchema = SchemaFactory.createForClass(Seat);
