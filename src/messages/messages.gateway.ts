@@ -79,6 +79,7 @@ export class MessagesGateway implements OnModuleInit {
 
     // fetch all data in about the seatplan if there are no seat plan creating it
     const res = await this.tempService.finAllByChannel(`seatPlan_${accessCode}_${showTimeId}`)
+    console.log(res,`seatPlan_${accessCode}_${showTimeId}`)
 
     // sending fetched temp data to subsribed channel
     this.server.to(`seatPlan_${accessCode}_${showTimeId}`).emit("onJoin", res)
@@ -94,10 +95,10 @@ export class MessagesGateway implements OnModuleInit {
     console.log(body,"INCOMING DATA...")
 
     // updating seatdata in the temp database
-    const res  = await this.tempService.updateOne(`seatPlan_${accessCode}_${showTimeId}`,body.payload)
-
+    this.server.to(`seatPlan_${accessCode}_${showTimeId}`).emit("onMessage", body.payload || body)
+    const res  = await this.tempService.updateOne(`seatPlan_${accessCode}_${showTimeId}`,body.payload || body)
+    // console.log(res,"emiting data....")
     //sending updated data to clients that has subscibed to perticular channel
-    this.server.to(`seatPlan_${accessCode}_${showTimeId}`).emit("onMessage", res)
   }
 
   
