@@ -130,10 +130,11 @@ return res
     let params = {
       TableName:"users",
       // FilterExpression:"channelName = :channelName",
-      FilterExpression:"channelName = :channelName and currentType = :currentType",
+      // FilterExpression:"channelName = :channelName and currentType = :currentType",
+      FilterExpression:"channelName = :channelName and seatStatus = :seatStatus",
       ExpressionAttributeValues:{
         ":channelName":`seatPlan_1234V2_60606060`,
-        ":currentType":"selected"
+        ":seatStatus":"unavailable"
     }
       }
     const res = await db.scan(params).promise()
